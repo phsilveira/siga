@@ -1,0 +1,33 @@
+# I use ENV variables to name my containers and set the ports
+# to change, replate it here or in .env file
+version: '2'
+services:
+  php:
+    container_name: ${APP_NAME}-php
+    image: jlamim/php7-nginx
+    volumes:
+     - ./src2/:/var/www/src
+     #- ./demo:/var/www/src
+     #- ./admin:/var/www/src
+     #- ./auth:/var/www/src
+     #- ./Codeigniter-ionAuth:/var/www/src
+    links:
+     - database
+    ports:
+     - ${HTTP_PORT}:80
+     - ${HTTPS_PORT}:443
+  database:
+    container_name: ${APP_NAME}-database
+    image: mysql:5.7
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+    volumes:
+     - ./data:/var/lib/mysql
+    ports:
+     - ${MYSQL_PORT}:3306
+volumes:
+  data:
+    driver: local
