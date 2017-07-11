@@ -139,30 +139,54 @@ class Assignments extends CI_Controller
     public function read($id) 
     {
         $row = $this->Assignments_model->get_by_id($id);
+
+        $this->load->model('Items_model');
+        $item                         = $this->Items_model->get_by_id($row->item_id);
+
+        $this->load->model('Membership_model');
+        $created_by_person            = $this->Membership_model->get_by_id($row->created_by_person_id);
+        $assignmented_for_person      = $this->Membership_model->get_by_id($row->assignmented_for_person_id);
+
+        $this->load->model('Cost_centers_model');
+        $cost_center                  = $this->Cost_centers_model->get_by_id($row->cost_center_id);
+
+        $this->load->model('Utils_model');
+        $status                        = $this->Utils_model->get_assignment_status_by_id($row->status_id);
+        $reason                       = $this->Utils_model->get_reason_by_id($row->reason_id);
+
+        
         if ($row) {
             $data = array(
-				'id' => $row->id,
-				'asset_id' => $row->asset_id,
-				'created_by_person_id' => $row->created_by_person_id,
-				'assignmented_for_person_id' => $row->assignmented_for_person_id,
-				'cost_center_id' => $row->cost_center_id,
-				'status' => $row->status,
-				'status_id' => $row->status_id,
-				'created_at' => $row->created_at,
-				'updated_at' => $row->updated_at,
-				'deleted_at' => $row->deleted_at,
-				'origin_location_id' => $row->origin_location_id,
-				'destiny_location_id' => $row->destiny_location_id,
-				'start_at' => $row->start_at,
-				'end_at' => $row->end_at,
-				'reason_id' => $row->reason_id,
-				'item_id' => $row->item_id,
-				'answer_at' => $row->answer_at,
-				'scheduled_at' => $row->scheduled_at,
-				'comments' => $row->comments,
+				'id'                            => $row->id,
+				'asset_id'                      => $row->asset_id,
+				'created_by_person'             => $created_by_person->user_name,
+				'assignmented_for_person'       => $row->assignmented_for_person_id,
+				'cost_center'                   => $row->cost_center_id,
+				'status'                        => $status->name,
+				'created_at'                    => $row->created_at,
+				'updated_at'                    => $row->updated_at,
+                'accepted_at'                   => $row->accepted_at,
+                'register_at'                   => $row->register_at,
+                'completed_at'                  => $row->completed_at,
+				'origin_location_id'            => $row->origin_location_id,
+				'destiny_location_id'           => $row->destiny_location_id,
+				'reason'                        => $reason->name,
+				'item'                          => $item->name,
+				'scheduled_at'                  => $row->scheduled_at,
+				'comments'                      => $row->comments,
+                'main_content'                  => 'admin/assignments/assignments_read',
 			);
-            $data['main_content'] = 'admin/assignments/assignments_read';
-        	$this->load->view('admin/base/template', $data);  
+
+            $this->load->model('Users_model');
+            $user_name      = $this->session->userdata('user_name');
+            $user           = $this->Users_model->get_user($user_name);
+
+            if ($user[0]['group'] == 1){
+                $this->load->view('admin/base/template', $data);    
+            } else {
+                $this->load->view('public/base/template', $data);    
+            }
+
         } else {
             $this->session->set_flashdata('message', 'Record Not Found');
             redirect(site_url('assignments'));
@@ -172,27 +196,23 @@ class Assignments extends CI_Controller
     public function create() 
     {
         $data = array(
-            'button' => 'Create',
-            'action' => site_url('assignments/create_action'),
-		    'id' => set_value('id'),
-		    'asset_id' => set_value('asset_id'),
-		    'created_by_person_id' => set_value('created_by_person_id'),
-		    'assignmented_for_person_id' => set_value('assignmented_for_person_id'),
-		    'cost_center_id' => set_value('cost_center_id'),
-		    'status' => set_value('status'),
-		    'status_id' => set_value('status_id'),
-		    'created_at' => set_value('created_at'),
-		    'updated_at' => set_value('updated_at'),
-		    'deleted_at' => set_value('deleted_at'),
-		    'origin_location_id' => set_value('origin_location_id'),
-		    'destiny_location_id' => set_value('destiny_location_id'),
-		    'start_at' => set_value('start_at'),
-		    'end_at' => set_value('end_at'),
-		    'reason_id' => set_value('reason_id'),
-		    'item_id' => set_value('item_id'),
-		    'answer_at' => set_value('answer_at'),
-		    'scheduled_at' => set_value('scheduled_at'),
-		    'comments' => set_value('comments'),
+            'button'                        => 'Create',
+            'action'                        => site_url('assignments/create_action'),
+		    'id'                            => set_value('id'),
+		    'asset_id'                      => set_value('asset_id'),
+		    'created_by_person_id'          => set_value('created_by_person_id'),
+		    'assignmented_for_person_id'    => set_value('assignmented_for_person_id'),
+		    'cost_center_id'                => set_value('cost_center_id'),
+		    'status_id'                     => set_value('status_id'),
+		    'created_at'                    => set_value('created_at'),
+		    'updated_at'                    => set_value('updated_at'),
+		    'deleted_at'                    => set_value('deleted_at'),
+		    'origin_location_id'            => set_value('origin_location_id'),
+		    'destiny_location_id'           => set_value('destiny_location_id'),
+		    'reason_id'                     => set_value('reason_id'),
+		    'item_id'                       => set_value('item_id'),
+		    'scheduled_at'                  => set_value('scheduled_at'),
+		    'comments'                      => set_value('comments'),
 		);
 
         $this->load->model('Users_model');
@@ -221,18 +241,14 @@ class Assignments extends CI_Controller
 				'created_by_person_id' => $this->input->post('created_by_person_id',TRUE),
 				'assignmented_for_person_id' => $this->input->post('assignmented_for_person_id',TRUE),
 				'cost_center_id' => $this->input->post('cost_center_id',TRUE),
-				'status' => $this->input->post('status',TRUE),
 				'status_id' => $this->input->post('status_id',TRUE),
 				'created_at' => $this->input->post('created_at',TRUE),
 				'updated_at' => $this->input->post('updated_at',TRUE),
 				'deleted_at' => $this->input->post('deleted_at',TRUE),
 				'origin_location_id' => $this->input->post('origin_location_id',TRUE),
 				'destiny_location_id' => $this->input->post('destiny_location_id',TRUE),
-				'start_at' => $this->input->post('start_at',TRUE),
-				'end_at' => $this->input->post('end_at',TRUE),
 				'reason_id' => $this->input->post('reason_id',TRUE),
 				'item_id' => $this->input->post('item_id',TRUE),
-				'answer_at' => $this->input->post('answer_at',TRUE),
 				'scheduled_at' => $this->input->post('scheduled_at',TRUE),
 				'comments' => $this->input->post('comments',TRUE),
 		    );
@@ -256,18 +272,14 @@ class Assignments extends CI_Controller
 				'created_by_person_id' => set_value('created_by_person_id', $row->created_by_person_id),
 				'assignmented_for_person_id' => set_value('assignmented_for_person_id', $row->assignmented_for_person_id),
 				'cost_center_id' => set_value('cost_center_id', $row->cost_center_id),
-				'status' => set_value('status', $row->status),
 				'status_id' => set_value('status_id', $row->status_id),
 				'created_at' => set_value('created_at', $row->created_at),
 				'updated_at' => set_value('updated_at', $row->updated_at),
 				'deleted_at' => set_value('deleted_at', $row->deleted_at),
 				'origin_location_id' => set_value('origin_location_id', $row->origin_location_id),
 				'destiny_location_id' => set_value('destiny_location_id', $row->destiny_location_id),
-				'start_at' => set_value('start_at', $row->start_at),
-				'end_at' => set_value('end_at', $row->end_at),
 				'reason_id' => set_value('reason_id', $row->reason_id),
 				'item_id' => set_value('item_id', $row->item_id),
-				'answer_at' => set_value('answer_at', $row->answer_at),
 				'scheduled_at' => set_value('scheduled_at', $row->scheduled_at),
 				'comments' => set_value('comments', $row->comments),
 		    );
@@ -302,18 +314,14 @@ class Assignments extends CI_Controller
 				'created_by_person_id' => $this->input->post('created_by_person_id',TRUE),
 				'assignmented_for_person_id' => $this->input->post('assignmented_for_person_id',TRUE),
 				'cost_center_id' => $this->input->post('cost_center_id',TRUE),
-				'status' => $this->input->post('status',TRUE),
 				'status_id' => $this->input->post('status_id',TRUE),
 				'created_at' => $this->input->post('created_at',TRUE),
 				'updated_at' => $this->input->post('updated_at',TRUE),
 				'deleted_at' => $this->input->post('deleted_at',TRUE),
 				'origin_location_id' => $this->input->post('origin_location_id',TRUE),
 				'destiny_location_id' => $this->input->post('destiny_location_id',TRUE),
-				'start_at' => $this->input->post('start_at',TRUE),
-				'end_at' => $this->input->post('end_at',TRUE),
 				'reason_id' => $this->input->post('reason_id',TRUE),
 				'item_id' => $this->input->post('item_id',TRUE),
-				'answer_at' => $this->input->post('answer_at',TRUE),
 				'scheduled_at' => $this->input->post('scheduled_at',TRUE),
 				'comments' => $this->input->post('comments',TRUE),
 		    );
@@ -400,116 +408,160 @@ class Assignments extends CI_Controller
     public function accept($id) 
     {
         $row                          = $this->Assignments_model->get_by_id($id);
-        $this->load->model('Utils_model');
-        $status                       = $this->Utils_model->get_all_assignment_status();
-        $reasons                      = $this->Utils_model->get_all_reasons();
 
+        $this->load->model('Items_model');
+        $item                         = $this->Items_model->get_by_id($row->item_id);
+
+        $this->load->model('Membership_model');
+        $created_by_person            = $this->Membership_model->get_by_id($row->created_by_person_id);
+
+        $this->load->model('Cost_centers_model');
+        $cost_center                  = $this->Cost_centers_model->get_by_id($row->cost_center_id);
+
+        $this->load->model('Utils_model');
+        $status                        = $this->Utils_model->get_assignment_status_by_id($row->status_id);
+        $reason                       = $this->Utils_model->get_reason_by_id($row->reason_id);
+        
         if ($row) {
             $data = array(
-                'button' 						=> 'Accept',
-                'action' 						=> site_url('assignments/accept_action'),
-				'id' 							=> set_value('id', $row->id),
-				'asset_id' 						=> set_value('asset_id', $row->asset_id),
-				'created_by_person_id' 			=> set_value('created_by_person_id', $row->created_by_person_id),
-				'assignmented_for_person_id' 	=> set_value('assignmented_for_person_id', $row->assignmented_for_person_id),
-				'cost_center_id' 				=> set_value('cost_center_id', $row->cost_center_id),
-				'status_id' 					=> set_value('status_id', $row->status_id),
-				'created_at' 					=> set_value('created_at', $row->created_at),
-				'updated_at' 					=> set_value('updated_at', $row->updated_at),
-				'origin_location_id' 			=> set_value('origin_location_id', $row->origin_location_id),
-				'destiny_location_id' 			=> set_value('destiny_location_id', $row->destiny_location_id),
-				'reason_id' 					=> set_value('reason_id', $row->reason_id),
-				'item_id' 						=> set_value('item_id', $row->item_id),
-				'comments' 						=> set_value('comments', $row->comments),
-                'status'                        => $status,
-                'reasons'                       => $reasons,
-		    );
+                'button'                        => 'Accept',
+                'action'                        => site_url('assignments/accept_action'),
+                'id'                            => $row->id,
+                'asset_id'                      => $row->asset_id,
+                'created_by_person'             => $created_by_person->user_name,
+                'cost_center'                   => $cost_center,
+                'status'                        => $status->name,
+                'created_at'                    => $row->created_at,
+                'origin_location_id'            => $row->origin_location_id,
+                'destiny_location_id'           => $row->destiny_location_id,
+                'reason'                        => $reason->name,
+                'item'                          => $item->name,
+                'scheduled_at'                  => $row->scheduled_at,
+                'comments'                      => $row->comments,
+                'main_content'                  => 'public/assignments/assignments_accept',
+            );
 
             $this->load->model('Users_model');
             $user_name      = $this->session->userdata('user_name');
             $user           = $this->Users_model->get_user($user_name);
 
             if ($user[0]['group'] == 1){
-                $data['main_content'] = 'admin/assignments/assignments_accept';
-                $this->load->view('admin/base/template', $data);  
+                $this->load->view('admin/base/template', $data);    
             } else {
-                $data['main_content'] = 'public/assignments/assignments_accept';
-                $this->load->view('public/base/template', $data);  
+                $this->load->view('public/base/template', $data);    
             }
 
         } else {
             $this->session->set_flashdata('message', 'Record Not Found');
             redirect(site_url('assignments'));
         }
+
+    //     if ($row) {
+    //         $data = array(
+    //             'button' 						=> 'Accept',
+    //             'action' 						=> site_url('assignments/accept_action'),
+				// 'id' 							=> set_value('id', $row->id),
+				// 'asset_id' 						=> set_value('asset_id', $row->asset_id),
+				// 'created_by_person_id' 			=> set_value('created_by_person_id', $row->created_by_person_id),
+				// 'assignmented_for_person_id' 	=> set_value('assignmented_for_person_id', $row->assignmented_for_person_id),
+				// 'cost_center_id' 				=> set_value('cost_center_id', $row->cost_center_id),
+				// 'status_id' 					=> set_value('status_id', $row->status_id),
+				// 'created_at' 					=> set_value('created_at', $row->created_at),
+				// 'updated_at' 					=> set_value('updated_at', $row->updated_at),
+				// 'origin_location_id' 			=> set_value('origin_location_id', $row->origin_location_id),
+				// 'destiny_location_id' 			=> set_value('destiny_location_id', $row->destiny_location_id),
+				// 'reason_id' 					=> set_value('reason_id', $row->reason_id),
+				// 'item_id' 						=> set_value('item_id', $row->item_id),
+				// 'comments' 						=> set_value('comments', $row->comments),
+    //             'status'                        => $status,
+    //             'reasons'                       => $reasons,
+		  //   );
+
+    //         $this->load->model('Users_model');
+    //         $user_name      = $this->session->userdata('user_name');
+    //         $user           = $this->Users_model->get_user($user_name);
+
+    //         if ($user[0]['group'] == 1){
+    //             $data['main_content'] = 'admin/assignments/assignments_accept';
+    //             $this->load->view('admin/base/template', $data);  
+    //         } else {
+    //             $data['main_content'] = 'public/assignments/assignments_accept';
+    //             $this->load->view('public/base/template', $data);  
+    //         }
+
+    //     } else {
+    //         $this->session->set_flashdata('message', 'Record Not Found');
+    //         redirect(site_url('assignments'));
+    //     }
     }
 
     public function accept_action() 
     {
-        // $this->_rules();
-        $this->form_validation->set_rules('assignmented_for_person_id', 'assignmented for person id', 'trim|required');
-        $this->form_validation->set_error_delimiters('<span class="text-danger">', '</span>');
 
-        $user_name 		= $this->session->userdata('user_name');
-        $user 		= $this->users_model->get_user($user_name);
+        $this->load->model('Users_model');
+        $user_name      = $this->session->userdata('user_name');
+        $user           = $this->Users_model->get_user($user_name);
 	    $current_date 	= date("Y-m-d,H:i:s");
         $status_id 		= 3;
         $user_id 	= $user[0]['id'];
 
-        if ($this->form_validation->run() == FALSE) {
-            $this->accept($this->input->post('id', TRUE));
-        } else {
-            $data = array(
-				'assignmented_for_person_id' => $user_id,
-				'status_id' 				 => $status_id,
-				'updated_at' 				 => $current_date,
-				'start_at'  				 => $current_date,
-				'answer_at'	 				 => $current_date,
-		    );
+        $data = array(
+			'assignmented_for_person_id' => $user_id,
+			'status_id' 				 => $status_id,
+			'updated_at' 				 => $current_date,
+            'accepted_at'                => $current_date,
+	    );
 
-            $this->Assignments_model->update($this->input->post('id', TRUE), $data);
-            $this->session->set_flashdata('message', 'Update Record Success');
-            redirect(site_url('assignments'));
-        }
+        $this->Assignments_model->update($this->input->post('id', TRUE), $data);
+        $this->session->set_flashdata('message', 'Update Record Success');
+        redirect(site_url('assignments'));
+    
     }
 
     public function register($id) 
     {
         $row                          = $this->Assignments_model->get_by_id($id);
-        $this->load->model('Utils_model');
-        $status                       = $this->Utils_model->get_all_assignment_status();
-        $reasons                      = $this->Utils_model->get_all_reasons();
 
+        $this->load->model('Items_model');
+        $item                         = $this->Items_model->get_by_id($row->item_id);
+
+        $this->load->model('Membership_model');
+        $created_by_person            = $this->Membership_model->get_by_id($row->created_by_person_id);
+
+        $this->load->model('Cost_centers_model');
+        $cost_center                  = $this->Cost_centers_model->get_by_id($row->cost_center_id);
+
+        $this->load->model('Utils_model');
+        $status                        = $this->Utils_model->get_assignment_status_by_id($row->status_id);
+        $reason                       = $this->Utils_model->get_reason_by_id($row->reason_id);
+        
         if ($row) {
             $data = array(
-                'button' 						=> 'Register',
-                'action' 						=> site_url('assignments/register_action'),
-				'id' 							=> set_value('id', $row->id),
-				'asset_id' 						=> set_value('asset_id', $row->asset_id),
-				'created_by_person_id' 			=> set_value('created_by_person_id', $row->created_by_person_id),
-				'assignmented_for_person_id' 	=> set_value('assignmented_for_person_id', $row->assignmented_for_person_id),
-				'cost_center_id' 				=> set_value('cost_center_id', $row->cost_center_id),
-				'status_id' 					=> set_value('status_id', $row->status_id),
-				'created_at' 					=> set_value('created_at', $row->created_at),
-				'updated_at' 					=> set_value('updated_at', $row->updated_at),
-				'origin_location_id' 			=> set_value('origin_location_id', $row->origin_location_id),
-				'destiny_location_id' 			=> set_value('destiny_location_id', $row->destiny_location_id),
-				'reason_id' 					=> set_value('reason_id', $row->reason_id),
-				'item_id' 						=> set_value('item_id', $row->item_id),
-				'comments' 						=> set_value('comments', $row->comments),
-                'status'                        => $status,
-                'reasons'                       => $reasons,
-		    );
+                'button'                        => 'Accept',
+                'action'                        => site_url('assignments/register_action'),
+                'id'                            => $row->id,
+                'asset_id'                      => $row->asset_id,
+                'created_by_person'             => $created_by_person->user_name,
+                'cost_center'                   => $cost_center,
+                'status'                        => $status->name,
+                'created_at'                    => $row->created_at,
+                'origin_location_id'            => $row->origin_location_id,
+                'destiny_location_id'           => $row->destiny_location_id,
+                'reason'                        => $reason->name,
+                'item'                          => $item->name,
+                'scheduled_at'                  => $row->scheduled_at,
+                'comments'                      => $row->comments,
+                'main_content'                  => 'public/assignments/assignments_register',
+            );
 
-    		$this->load->model('Users_model');
+            $this->load->model('Users_model');
             $user_name      = $this->session->userdata('user_name');
             $user           = $this->Users_model->get_user($user_name);
 
             if ($user[0]['group'] == 1){
-                $data['main_content'] = 'admin/assignments/assignments_register';
-                $this->load->view('admin/base/template', $data);  
+                $this->load->view('admin/base/template', $data);    
             } else {
-                $data['main_content'] = 'public/assignments/assignments_register';
-                $this->load->view('public/base/template', $data);  
+                $this->load->view('public/base/template', $data);    
             }
 
         } else {
@@ -522,22 +574,21 @@ class Assignments extends CI_Controller
     {
         // $this->_rules();
         $this->form_validation->set_rules('asset_id', 'asset id', 'trim|required');
+        $this->form_validation->set_rules('origin_location_id', 'origin_location_id', 'trim|required');
         $this->form_validation->set_error_delimiters('<span class="text-danger">', '</span>');
 
-        $user_name 		= $this->session->userdata('user_name');
-        // $user 		= $this->users_model->get_user($user_name);
 	    $current_date 	= date("Y-m-d,H:i:s");
         $status_id 		= 4;
-        // $user_id 	= $user[0]['id'];
-        $user_id 		= $user_name;
 
         if ($this->form_validation->run() == FALSE) {
             $this->accept($this->input->post('id', TRUE));
         } else {
             $data = array(
             	'asset_id' 					 => $this->input->post('asset_id'),
+                'origin_location_id'         => $this->input->post('origin_location_id'),
 				'status_id' 				 => $status_id,
 				'updated_at' 				 => $current_date,
+                'register_at'                => $current_date,
 		    );
 
             $this->Assignments_model->update($this->input->post('id', TRUE), $data);
@@ -549,43 +600,48 @@ class Assignments extends CI_Controller
     public function complete($id) 
     {
         $row                          = $this->Assignments_model->get_by_id($id);
-        $this->load->model('Utils_model');
-        $status                       = $this->Utils_model->get_all_assignment_status();
-        $reasons                      = $this->Utils_model->get_all_reasons();
 
+        $this->load->model('Items_model');
+        $item                         = $this->Items_model->get_by_id($row->item_id);
+
+        $this->load->model('Membership_model');
+        $created_by_person            = $this->Membership_model->get_by_id($row->created_by_person_id);
+
+        $this->load->model('Cost_centers_model');
+        $cost_center                  = $this->Cost_centers_model->get_by_id($row->cost_center_id);
+
+        $this->load->model('Utils_model');
+        $status                        = $this->Utils_model->get_assignment_status_by_id($row->status_id);
+        $reason                       = $this->Utils_model->get_reason_by_id($row->reason_id);
+        
         if ($row) {
             $data = array(
-                'button' 						=> 'Complete',
-                'action' 						=> site_url('assignments/complete_action'),
-				'id' 							=> set_value('id', $row->id),
-				'asset_id' 						=> set_value('asset_id', $row->asset_id),
-				'created_by_person_id' 			=> set_value('created_by_person_id', $row->created_by_person_id),
-				'assignmented_for_person_id' 	=> set_value('assignmented_for_person_id', $row->assignmented_for_person_id),
-				'cost_center_id' 				=> set_value('cost_center_id', $row->cost_center_id),
-				'status_id' 					=> set_value('status_id', $row->status_id),
-				'created_at' 					=> set_value('created_at', $row->created_at),
-				'updated_at' 					=> set_value('updated_at', $row->updated_at),
-				'origin_location_id' 			=> set_value('origin_location_id', $row->origin_location_id),
-				'destiny_location_id' 			=> set_value('destiny_location_id', $row->destiny_location_id),
-				'reason_id' 					=> set_value('reason_id', $row->reason_id),
-				'item_id' 						=> set_value('item_id', $row->item_id),
-				'comments' 						=> set_value('comments', $row->comments),
-                'status'                        => $status,
-                'reasons'                       => $reasons,
-		    );
+                'button'                        => 'Accept',
+                'action'                        => site_url('assignments/complete_action'),
+                'id'                            => $row->id,
+                'asset_id'                      => $row->asset_id,
+                'created_by_person'             => $created_by_person->user_name,
+                'cost_center'                   => $cost_center,
+                'status'                        => $status->name,
+                'created_at'                    => $row->created_at,
+                'origin_location_id'            => $row->origin_location_id,
+                'destiny_location_id'           => $row->destiny_location_id,
+                'reason'                        => $reason->name,
+                'item'                          => $item->name,
+                'scheduled_at'                  => $row->scheduled_at,
+                'comments'                      => $row->comments,
+                'main_content'                  => 'public/assignments/assignments_complete',
+            );
 
             $this->load->model('Users_model');
             $user_name      = $this->session->userdata('user_name');
             $user           = $this->Users_model->get_user($user_name);
 
             if ($user[0]['group'] == 1){
-                $data['main_content'] = 'admin/assignments/assignments_complete';
-                $this->load->view('admin/base/template', $data);  
+                $this->load->view('admin/base/template', $data);    
             } else {
-                $data['main_content'] = 'public/assignments/assignments_complete';
-                $this->load->view('public/base/template', $data);  
+                $this->load->view('public/base/template', $data);    
             }
-
 
         } else {
             $this->session->set_flashdata('message', 'Record Not Found');
@@ -597,23 +653,22 @@ class Assignments extends CI_Controller
     {
         // $this->_rules();
         $this->form_validation->set_rules('asset_id', 'asset id', 'trim|required');
+        $this->form_validation->set_rules('destiny_location_id', 'destiny_location_id', 'trim|required');
         $this->form_validation->set_error_delimiters('<span class="text-danger">', '</span>');
 
-        $user_name 		= $this->session->userdata('user_name');
-        // $user 		= $this->users_model->get_user($user_name);
-	    $current_date 	= date("Y-m-d,H:i:s");
-        $status_id 		= 4;
-        // $user_id 	= $user[0]['id'];
-        $user_id 		= $user_name;
+        $current_date   = date("Y-m-d,H:i:s");
+        $status_id      = 5;
 
         if ($this->form_validation->run() == FALSE) {
             $this->accept($this->input->post('id', TRUE));
         } else {
             $data = array(
-            	'asset_id' 					 => $this->input->post('asset_id'),
-				'status_id' 				 => $status_id,
-				'updated_at' 				 => $current_date,
-		    );
+                'asset_id'                   => $this->input->post('asset_id'),
+                'destiny_location_id'        => $this->input->post('destiny_location_id'),
+                'status_id'                  => $status_id,
+                'updated_at'                 => $current_date,
+                'completed_at'               => $current_date,
+            );
 
             $this->Assignments_model->update($this->input->post('id', TRUE), $data);
             $this->session->set_flashdata('message', 'Update Record Success');
@@ -641,18 +696,11 @@ class Assignments extends CI_Controller
 		$this->form_validation->set_rules('created_by_person_id', 'created by person id', 'trim|required');
 		$this->form_validation->set_rules('assignmented_for_person_id', 'assignmented for person id', 'trim|required');
 		$this->form_validation->set_rules('cost_center_id', 'cost center id', 'trim|required');
-		$this->form_validation->set_rules('status', 'status', 'trim|required');
 		$this->form_validation->set_rules('status_id', 'status id', 'trim|required');
-		$this->form_validation->set_rules('created_at', 'created at', 'trim|required');
-		$this->form_validation->set_rules('updated_at', 'updated at', 'trim|required');
-		$this->form_validation->set_rules('deleted_at', 'deleted at', 'trim|required');
 		$this->form_validation->set_rules('origin_location_id', 'origin location id', 'trim|required');
 		$this->form_validation->set_rules('destiny_location_id', 'destiny location id', 'trim|required');
-		$this->form_validation->set_rules('start_at', 'start at', 'trim|required');
-		$this->form_validation->set_rules('end_at', 'end at', 'trim|required');
 		$this->form_validation->set_rules('reason_id', 'reason id', 'trim|required');
 		$this->form_validation->set_rules('item_id', 'item id', 'trim|required');
-		$this->form_validation->set_rules('answer_at', 'answer at', 'trim|required');
 		$this->form_validation->set_rules('scheduled_at', 'scheduled at', 'trim|required');
 		$this->form_validation->set_rules('comments', 'comments', 'trim|required');
 
@@ -758,18 +806,14 @@ class Assignments extends CI_Controller
 		    xlsWriteNumber($tablebody, $kolombody++, $data->created_by_person_id);
 		    xlsWriteNumber($tablebody, $kolombody++, $data->assignmented_for_person_id);
 		    xlsWriteNumber($tablebody, $kolombody++, $data->cost_center_id);
-		    xlsWriteLabel($tablebody, $kolombody++, $data->status);
 		    xlsWriteNumber($tablebody, $kolombody++, $data->status_id);
 		    xlsWriteLabel($tablebody, $kolombody++, $data->created_at);
 		    xlsWriteLabel($tablebody, $kolombody++, $data->updated_at);
 		    xlsWriteLabel($tablebody, $kolombody++, $data->deleted_at);
 		    xlsWriteNumber($tablebody, $kolombody++, $data->origin_location_id);
 		    xlsWriteNumber($tablebody, $kolombody++, $data->destiny_location_id);
-		    xlsWriteLabel($tablebody, $kolombody++, $data->start_at);
-		    xlsWriteLabel($tablebody, $kolombody++, $data->end_at);
 		    xlsWriteNumber($tablebody, $kolombody++, $data->reason_id);
 		    xlsWriteNumber($tablebody, $kolombody++, $data->item_id);
-		    xlsWriteLabel($tablebody, $kolombody++, $data->answer_at);
 		    xlsWriteLabel($tablebody, $kolombody++, $data->scheduled_at);
 		    xlsWriteLabel($tablebody, $kolombody++, $data->comments);
 

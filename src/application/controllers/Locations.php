@@ -10,6 +10,9 @@ class Locations extends CI_Controller
         parent::__construct();
         $this->load->model('Locations_model');
         $this->load->library('form_validation');
+        if(!$this->session->userdata('is_logged_in')){
+            redirect('login');
+        }
     }
 
     public function index()
@@ -72,6 +75,9 @@ class Locations extends CI_Controller
 
     public function create() 
     {
+        $this->load->model('Cost_centers_model');
+        $all_cost_centers           = $this->Cost_centers_model->get_all();
+
         $data = array(
             'button'         => 'Create',
             'action'         => site_url('locations/create_action'),
@@ -87,6 +93,7 @@ class Locations extends CI_Controller
             'status'         => set_value('status'),
             'fone'           => set_value('fone'),
             'location_type'  => set_value('location_type'),
+            'all_cost_centers' => $all_cost_centers,
             'main_content'   => 'admin/locations/locations_form',
             );
         $this->load->view('admin/base/template', $data);
@@ -99,16 +106,16 @@ class Locations extends CI_Controller
         if ($this->form_validation->run() == FALSE) {
             $this->create();
         } else {
+            $current_date   = date("Y-m-d,H:i:s");
             $data = array(
               'cost_center_id'  => $this->input->post('cost_center_id',TRUE),
               'floor'           => $this->input->post('floor',TRUE),
               'block'           => $this->input->post('block',TRUE),
               'sector'          => $this->input->post('sector',TRUE),
               'room'            => $this->input->post('room',TRUE),
-              'created_at'      => $this->input->post('created_at',TRUE),
-              'updated_at'      => $this->input->post('updated_at',TRUE),
-              'deleted_at'      => $this->input->post('deleted_at',TRUE),
-              'status'          => $this->input->post('status',TRUE),
+              'created_at'      => $current_date,
+              'updated_at'      => $current_date,
+              'status'          => 'Ativo',
               'fone'            => $this->input->post('fone',TRUE),
               'location_type'   => $this->input->post('location_type',TRUE),
             );
@@ -133,13 +140,9 @@ class Locations extends CI_Controller
                 'block'          => set_value('block', $row->block),
                 'sector'         => set_value('sector', $row->sector),
                 'room'           => set_value('room', $row->room),
-                'created_at'     => set_value('created_at', $row->created_at),
-                'updated_at'     => set_value('updated_at', $row->updated_at),
-                'deleted_at'     => set_value('deleted_at', $row->deleted_at),
-                'status'         => set_value('status', $row->status),
                 'fone'           => set_value('fone', $row->fone),
                 'location_type'  => set_value('location_type', $row->location_type),
-                'main_content'   => 'locations/locations_form',
+                'main_content'   => 'admin/locations/locations_form',
             );
             $this->load->view('admin/base/template', $data);
         } else {
@@ -196,10 +199,6 @@ class Locations extends CI_Controller
        $this->form_validation->set_rules('block', 'block', 'trim|required');
        $this->form_validation->set_rules('sector', 'sector', 'trim|required');
        $this->form_validation->set_rules('room', 'room', 'trim|required');
-       $this->form_validation->set_rules('created_at', 'created at', 'trim|required');
-       $this->form_validation->set_rules('updated_at', 'updated at', 'trim|required');
-       $this->form_validation->set_rules('deleted_at', 'deleted at', 'trim|required');
-       $this->form_validation->set_rules('status', 'status', 'trim|required');
        $this->form_validation->set_rules('fone', 'fone', 'trim|required');
        $this->form_validation->set_rules('location_type', 'location type', 'trim|required');
        $this->form_validation->set_rules('id', 'id', 'trim');

@@ -26,22 +26,7 @@
 				<ul class="nav navbar-nav">
 					
 					<li>
-						<a href="<?php echo base_url(); ?>admin/assignments">Chamados</a>
-					</li>
-
-					<li class="dropdown">
-						<a href="#" class="dropdown-toggle" data-toggle="dropdown"> Meus Chamados<b class="caret"></b></a>
-						<ul class="dropdown-menu">
-						<li>
-						<a href="<?php echo base_url(); ?>admin/assignments/progress">Em Progresso</a>
-						</li>
-						<li>
-						<a href="<?php echo base_url(); ?>admin/assignments/open">Abertos</a>
-						</li>
-						<li>
-						<a href="<?php echo base_url(); ?>admin/assignments/completed">Concluídos</a>
-						</li>
-						</ul>
+						<a href="<?php echo base_url(); ?>/assignments">Chamados</a>
 					</li>
 
 					<li class="dropdown">
@@ -109,7 +94,7 @@
 				
 				<ul class="nav navbar-nav navbar-right">
 
-					<li><a href="<?php echo base_url(); ?>admin/logout">Logout</a></li>
+					<li><a href="<?php echo base_url(); ?>logout">Logout</a></li>
 
 				</ul>
 			</div>

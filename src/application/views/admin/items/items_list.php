@@ -1,3 +1,4 @@
+<div class="container">
 <h2 style="margin-top:0px">Items List</h2>
 <div class="row" style="margin-bottom: 10px">
     <div class="col-md-4">
@@ -71,4 +72,5 @@
     <div class="col-md-6 text-right">
         <?php echo $pagination ?>
     </div>
+</div>
 </div>

@@ -6,7 +6,22 @@
         
         <div class="form-group">
             <label for="int">Centro de custo<?php echo form_error('cost_center_id') ?></label>
-            <input type="text" class="form-control" name="cost_center_id" id="cost_center_id" placeholder="Cost Center Id" value="<?php echo $cost_center_id; ?>" />
+            <select name="cost_center_id" class="form-control" id="cost_center_id" placeholder="Cost Center Id">
+            <option value="" selected="selected">Selecionar</option>
+            <option value="100">Maternidade</option>
+            <option value="101">Cardiovascular</option>
+            <option value="102">Cirurgia Geral</option>
+            <option value="103">Cirurgia Pediátrica</option>
+            <option value="104">Ginecologia</option>
+            <option value="105">Mastologia</option>
+            <option value="106">Oftalmologia</option>
+            <option value="107">Ortopedia</option>
+            <option value="108">Otorrino</option>
+            <option value="109">Plástica</option>
+            <option value="110">Urologia</option>
+            <option value="111">Teste de centro de custo</option>
+            <option value="112">Entreposto</option>
+            </select>
         </div>
 
         <div class="form-group">

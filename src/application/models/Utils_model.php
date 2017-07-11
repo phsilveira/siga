@@ -18,14 +18,23 @@ class Utils_model extends CI_Model
         return $this->db->get('reasons')->result();
     }
 
+    function get_reason_by_id($id)
+    {
+        $this->db->where('id', $id);
+        return $this->db->get('reasons')->row();
+    }
+
     function get_all_assignment_status()
     {
         $this->db->order_by('id', 'desc');
         return $this->db->get('assignment_status')->result();
     }
 
-
-
+    function get_assignment_status_by_id($id)
+    {
+        $this->db->where('id', $id);
+        return $this->db->get('assignment_status')->row();
+    }
 
 }
 

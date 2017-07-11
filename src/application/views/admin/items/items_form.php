@@ -1,3 +1,4 @@
+<div class="container">
 <h2 style="margin-top:0px">Items <?php echo $button ?></h2>
 <form action="<?php echo $action; ?>" method="post">
 <div class="form-group">
@@ -24,3 +25,4 @@
 <button type="submit" class="btn btn-primary"><?php echo $button ?></button> 
 <a href="<?php echo site_url('items') ?>" class="btn btn-default">Cancel</a>
 </form>
+</div>

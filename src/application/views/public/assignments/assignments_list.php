@@ -1,8 +1,8 @@
 <div class="container">
-  <h2 style="margin-top:0px">Assignments List</h2>
+  <h2 style="margin-top:0px">Chamados</h2>
   <div class="row" style="margin-bottom: 10px">
     <div class="col-md-4">
-      <?php echo anchor(site_url('assignments/create'),'Create', 'class="btn btn-primary"'); ?>
+    
     </div>
     <div class="col-md-4 text-center">
       <div style="margin-top: 8px" id="message">
@@ -49,15 +49,19 @@
     {
       ?>
       <tr>
-        <td style="text-align:center" width="200px">
-          <?php 
-          echo anchor(site_url('assignments/read/'.$assignments->id),'Read'); 
-          echo ' | '; 
-          echo anchor(site_url('assignments/update/'.$assignments->id),'Update'); 
-          echo ' | '; 
-          echo anchor(site_url('assignments/delete/'.$assignments->id),'Delete','onclick="javasciprt: return confirm(\'Are You Sure ?\')"'); 
-          ?>
-        </td>
+        <?php 
+        foreach($users as $user){if ($user->id == $assignments->assignmented_for_person_id){$assignmented_for_person = $user->user_name;}}
+        echo '<td class="crud-actions">';
+        if ($assignments->status_id == 2){
+          echo '<a href="'.site_url("/assignments/accept/").$assignments->id.'" class="btn btn-primary">Aceitar</a>';
+        }
+        if ($assignments->status_id == 3 && $assignmented_for_person == $this->session->userdata('user_name') ) {
+          echo '<a href="'.site_url('/assignments/register/').$assignments->id.'" class="btn btn-warning">Registrar</a>';
+        }
+        if ($assignments->status_id == 4 && $assignmented_for_person == $this->session->userdata('user_name')){
+          echo '<a href="'.site_url('/assignments/complete/').$assignments->id.'" class="btn btn-success">Finalizar</a>';
+        }
+        echo '</td>';?>
         <td><?php echo $assignments->created_at ?></td>
         <td width="80px"><?php echo ++$start ?></td>
         <td><a href="<?php echo site_url('assignments/read/'.$assignments->id); ?>"><?php echo $assignments->id ?></a></td>

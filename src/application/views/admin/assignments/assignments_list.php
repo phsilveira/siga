@@ -35,7 +35,7 @@
       <th>Linha</th>
       <th>Criado em</th>
       <th>ID</th>
-      <th>Tag</th>
+      <th>Ativo</th>
       <th>Solicitante</th>
       <th>Atendente</th>
       <th>Status</th>

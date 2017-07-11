@@ -1,4 +1,3 @@
-
 <?php
 
 if (!defined('BASEPATH'))
@@ -11,6 +10,9 @@ class Assets extends CI_Controller
         parent::__construct();
         $this->load->model('Assets_model');
         $this->load->library('form_validation');
+        if(!$this->session->userdata('is_logged_in')){
+            redirect('login');
+        }
     }
 
     public function index()
