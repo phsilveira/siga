@@ -6,11 +6,7 @@ services:
     container_name: ${APP_NAME}-php
     image: jlamim/php7-nginx
     volumes:
-     - ./src2/:/var/www/src
-     #- ./demo:/var/www/src
-     #- ./admin:/var/www/src
-     #- ./auth:/var/www/src
-     #- ./Codeigniter-ionAuth:/var/www/src
+     - ./src/:/var/www/src
     links:
      - database
     ports:
@@ -24,10 +20,10 @@ services:
       MYSQL_DATABASE: ${MYSQL_DATABASE}
       MYSQL_USER: ${MYSQL_USER}
       MYSQL_PASSWORD: ${MYSQL_PASSWORD}
-    volumes:
-     - ./data:/var/lib/mysql
+    #volumes:
+    # - ./data:/var/lib/mysql
     ports:
      - ${MYSQL_PORT}:3306
-volumes:
-  data:
-    driver: local
+#volumes:
+#  data:
+#    driver: local
