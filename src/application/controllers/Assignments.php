@@ -30,11 +30,21 @@ class Assignments extends CI_Controller
             $config['base_url']  = base_url() . 'assignments/index.html';
             $config['first_url'] = base_url() . 'assignments/index.html';
         }
+        $this->load->model('Users_model');
+        $user_name      = $this->session->userdata('user_name');
+        $user           = $this->Users_model->get_user($user_name);
 
         $config['per_page']          = 10;
         $config['page_query_string'] = TRUE;
-        $config['total_rows']        = $this->Assignments_model->total_rows($q);
-        $assignments                 = $this->Assignments_model->get_limit_data($config['per_page'], $start, $q);
+
+        if ($user[0]['group'] == 2){
+            $assignments             = $this->Assignments_model->get_limit_data($config['per_page'], $start, $q, $user[0]['id']);
+            $config['total_rows']        = $this->Assignments_model->total_rows($q, $assignmented_for_person_id = $user[0]['id']);
+        } else {
+            $assignments             = $this->Assignments_model->get_limit_data($config['per_page'], $start, $q);
+            $config['total_rows']        = $this->Assignments_model->total_rows($q);
+        }
+
         
         $this->load->model('Items_model');
         $items                       = $this->Items_model->get_all();
@@ -60,10 +70,6 @@ class Assignments extends CI_Controller
             'total_rows'        => $config['total_rows'],
             'start'             => $start,
         );
-
-        $this->load->model('Users_model');
-        $user_name      = $this->session->userdata('user_name');
-        $user     = $this->Users_model->get_user($user_name);
 
         if ($user[0]['group'] == 1){
             $data['main_content'] = 'admin/assignments/assignments_list';
@@ -539,6 +545,8 @@ class Assignments extends CI_Controller
             $data = array(
                 'button'                        => 'Accept',
                 'action'                        => site_url('assignments/register_action'),
+                'register_asset'                => site_url('assignments/register_asset/'.$row->id),
+                'register_location'             => site_url('assignments/register_location/'.$row->id),
                 'id'                            => $row->id,
                 'asset_id'                      => $row->asset_id,
                 'created_by_person'             => $created_by_person->user_name,
@@ -568,6 +576,46 @@ class Assignments extends CI_Controller
             $this->session->set_flashdata('message', 'Record Not Found');
             redirect(site_url('assignments'));
         }
+    }
+
+    public function register_asset($id) {
+        $row                          = $this->Assignments_model->get_by_id($id);
+
+        
+
+        $this->load->model('Items_model');
+        $item                         = $this->Items_model->get_by_id($row->item_id);
+
+        if ($row) {
+            $data = array(
+                'button'                        => 'Cadastrar',
+                'action'                        => site_url('assignments/register_asset_action'),
+                'id'                            => $row->id,
+                'asset_id'                      => $row->asset_id,
+                'item'                          => $item->name,
+                'main_content'                  => 'public/assignments/assignments_register',
+            );
+
+            $this->load->model('Users_model');
+            $user_name      = $this->session->userdata('user_name');
+            $user           = $this->Users_model->get_user($user_name);
+
+            if ($user[0]['group'] == 1){
+                $this->load->view('admin/base/template', $data);    
+            } else {
+                $this->load->view('public/base/template', $data);    
+            }
+
+        } else {
+            $this->session->set_flashdata('message', 'Record Not Found');
+            redirect(site_url('assignments'));
+        }
+
+
+    }
+
+    public function register_location() {
+        
     }
 
     public function register_action() 

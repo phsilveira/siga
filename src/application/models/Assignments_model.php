@@ -30,7 +30,7 @@ class Assignments_model extends CI_Model
     }
     
     // get total rows
-    function total_rows($q = NULL) {
+    function total_rows($q = NULL, $assignmented_for_person_id = NULL) {
         $this->db->like('id', $q);
         $this->db->or_like('asset_id', $q);
         $this->db->or_like('created_by_person_id', $q);
@@ -46,12 +46,16 @@ class Assignments_model extends CI_Model
         $this->db->or_like('item_id', $q);
         $this->db->or_like('scheduled_at', $q);
         $this->db->or_like('comments', $q);
+        if (!is_null($assignmented_for_person_id)){
+            $this->db->where('assignmented_for_person_id', $assignmented_for_person_id);
+            $this->db->or_where('assignmented_for_person_id', '0');
+        }
         $this->db->from($this->table);
         return $this->db->count_all_results();
     }
 
     // get data with limit and search
-    function get_limit_data($limit, $start = 0, $q = NULL) {
+    function get_limit_data($limit, $start = 0, $q = NULL, $assignmented_for_person_id = NULL) {
         $this->db->order_by($this->id, $this->order);
         $this->db->like('id', $q);
         $this->db->or_like('asset_id', $q);
@@ -68,6 +72,11 @@ class Assignments_model extends CI_Model
         $this->db->or_like('item_id', $q);
         $this->db->or_like('scheduled_at', $q);
         $this->db->or_like('comments', $q);
+        if (!is_null($assignmented_for_person_id)){
+            $this->db->where('assignmented_for_person_id', $assignmented_for_person_id);
+            $this->db->or_where('assignmented_for_person_id', '0');
+        }
+
         $this->db->limit($limit, $start);
         return $this->db->get($this->table)->result();
     }
