@@ -28,22 +28,29 @@ class Locations_model extends CI_Model
         $this->db->where($this->id, $id);
         return $this->db->get($this->table)->row();
     }
+
+    // get data by asset_tag
+    function get_by_tag($tag)
+    {
+        $this->db->where('tag', $tag);
+        return $this->db->get($this->table)->row();
+    }
     
     // get total rows
     function total_rows($q = NULL) {
         $this->db->like('id', $q);
-	$this->db->or_like('cost_center_id', $q);
-	$this->db->or_like('floor', $q);
-	$this->db->or_like('block', $q);
-	$this->db->or_like('sector', $q);
-	$this->db->or_like('room', $q);
-	$this->db->or_like('created_at', $q);
-	$this->db->or_like('updated_at', $q);
-	$this->db->or_like('deleted_at', $q);
-	$this->db->or_like('status', $q);
-	$this->db->or_like('fone', $q);
-	$this->db->or_like('location_type', $q);
-	$this->db->from($this->table);
+        $this->db->or_like('cost_center_id', $q);
+        $this->db->or_like('floor', $q);
+        $this->db->or_like('block', $q);
+        $this->db->or_like('sector', $q);
+        $this->db->or_like('room', $q);
+        $this->db->or_like('created_at', $q);
+        $this->db->or_like('updated_at', $q);
+        $this->db->or_like('deleted_at', $q);
+        $this->db->or_like('status', $q);
+        $this->db->or_like('fone', $q);
+        $this->db->or_like('location_type', $q);
+        $this->db->from($this->table);
         return $this->db->count_all_results();
     }
 
@@ -51,18 +58,18 @@ class Locations_model extends CI_Model
     function get_limit_data($limit, $start = 0, $q = NULL) {
         $this->db->order_by($this->id, $this->order);
         $this->db->like('id', $q);
-	$this->db->or_like('cost_center_id', $q);
-	$this->db->or_like('floor', $q);
-	$this->db->or_like('block', $q);
-	$this->db->or_like('sector', $q);
-	$this->db->or_like('room', $q);
-	$this->db->or_like('created_at', $q);
-	$this->db->or_like('updated_at', $q);
-	$this->db->or_like('deleted_at', $q);
-	$this->db->or_like('status', $q);
-	$this->db->or_like('fone', $q);
-	$this->db->or_like('location_type', $q);
-	$this->db->limit($limit, $start);
+        $this->db->or_like('cost_center_id', $q);
+        $this->db->or_like('floor', $q);
+        $this->db->or_like('block', $q);
+        $this->db->or_like('sector', $q);
+        $this->db->or_like('room', $q);
+        $this->db->or_like('created_at', $q);
+        $this->db->or_like('updated_at', $q);
+        $this->db->or_like('deleted_at', $q);
+        $this->db->or_like('status', $q);
+        $this->db->or_like('fone', $q);
+        $this->db->or_like('location_type', $q);
+        $this->db->limit($limit, $start);
         return $this->db->get($this->table)->result();
     }
 

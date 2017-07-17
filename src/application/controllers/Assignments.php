@@ -578,22 +578,47 @@ class Assignments extends CI_Controller
         }
     }
 
+    public function register_action() 
+    {
+        // $this->_rules();
+        // $this->form_validation->set_rules('asset_id', 'asset id', 'trim|required');
+        // $this->form_validation->set_rules('origin_location_id', 'origin_location_id', 'trim|required');
+        // $this->form_validation->set_error_delimiters('<span class="text-danger">', '</span>');
+
+        $current_date   = date("Y-m-d,H:i:s");
+        $status_id      = 4;
+
+        // if ($this->form_validation->run() == FALSE) {
+        //     $this->accept($this->input->post('id', TRUE));
+        // } else {
+        $data = array(
+            // 'asset_id'                   => $this->input->post('asset_id'),
+            // 'origin_location_id'         => $this->input->post('origin_location_id'),
+            'status_id'                  => $status_id,
+            'updated_at'                 => $current_date,
+            'register_at'                => $current_date,
+        );
+
+        $this->Assignments_model->update($this->input->post('id', TRUE), $data);
+        $this->session->set_flashdata('message', 'Update Record Success');
+        redirect(site_url('assignments'));
+        // }
+    }
+
     public function register_asset($id) {
         $row                          = $this->Assignments_model->get_by_id($id);
-
-        
 
         $this->load->model('Items_model');
         $item                         = $this->Items_model->get_by_id($row->item_id);
 
         if ($row) {
             $data = array(
-                'button'                        => 'Cadastrar',
+                'button'                        => 'Cadastrar Ativo',
                 'action'                        => site_url('assignments/register_asset_action'),
                 'id'                            => $row->id,
                 'asset_id'                      => $row->asset_id,
                 'item'                          => $item->name,
-                'main_content'                  => 'public/assignments/assignments_register',
+                'main_content'                  => 'public/assignments/assignments_register_asset',
             );
 
             $this->load->model('Users_model');
@@ -608,42 +633,109 @@ class Assignments extends CI_Controller
 
         } else {
             $this->session->set_flashdata('message', 'Record Not Found');
-            redirect(site_url('assignments'));
+            redirect(site_url('assignments/register/'.$id));
         }
 
 
     }
 
-    public function register_location() {
-        
-    }
-
-    public function register_action() 
+    public function register_asset_action() 
     {
         // $this->_rules();
         $this->form_validation->set_rules('asset_id', 'asset id', 'trim|required');
-        $this->form_validation->set_rules('origin_location_id', 'origin_location_id', 'trim|required');
         $this->form_validation->set_error_delimiters('<span class="text-danger">', '</span>');
 
-	    $current_date 	= date("Y-m-d,H:i:s");
-        $status_id 		= 4;
+        $current_date   = date("Y-m-d,H:i:s");
 
-        if ($this->form_validation->run() == FALSE) {
+        $this->load->model('Assets_model');
+        $asset            = $this->Assets_model->get_by_tag($this->input->post('asset_id'));
+
+        // echo $asset->id;
+
+        if ($this->form_validation->run() == FALSE || $asset->id == '') {
             $this->accept($this->input->post('id', TRUE));
         } else {
             $data = array(
-            	'asset_id' 					 => $this->input->post('asset_id'),
-                'origin_location_id'         => $this->input->post('origin_location_id'),
-				'status_id' 				 => $status_id,
-				'updated_at' 				 => $current_date,
+                'asset_id'                   => $asset->id,
+                'updated_at'                 => $current_date,
                 'register_at'                => $current_date,
-		    );
+            );
 
             $this->Assignments_model->update($this->input->post('id', TRUE), $data);
             $this->session->set_flashdata('message', 'Update Record Success');
-            redirect(site_url('assignments'));
+            redirect(site_url('assignments/register/'.$this->input->post('id')));
         }
     }
+
+    public function register_location($id) {
+        $row                          = $this->Assignments_model->get_by_id($id);
+
+        if ($row) {
+            $data = array(
+                'button'                        => 'Cadastrar Local',
+                'action'                        => site_url('assignments/register_location_action'),
+                'id'                            => $row->id,
+                'location_id'                   => $row->origin_location_id,
+                'main_content'                  => 'public/assignments/assignments_register_location',
+            );
+
+            $this->load->model('Users_model');
+            $user_name      = $this->session->userdata('user_name');
+            $user           = $this->Users_model->get_user($user_name);
+
+            if ($user[0]['group'] == 1){
+                $this->load->view('admin/base/template', $data);    
+            } else {
+                $this->load->view('public/base/template', $data);    
+            }
+
+        } else {
+            $this->session->set_flashdata('message', 'Record Not Found');
+            redirect(site_url('assignments/register/'.$id));
+        }
+        
+    }
+
+    public function register_location_action() 
+    {
+        // $this->_rules();
+        $this->form_validation->set_rules('origin_location_id', 'asset id', 'trim|required');
+        $this->form_validation->set_error_delimiters('<span class="text-danger">', '</span>');
+
+        $assignment     = $this->Assignments_model->get_by_id($this->input->post('id'));
+
+        $current_date   = date("Y-m-d,H:i:s");
+
+        $this->load->model('Locations_model');
+        $location         = $this->Locations_model->get_by_tag($this->input->post('origin_location_id'));
+
+        // if depends assignment status 
+
+        if ($this->form_validation->run() == FALSE || $location == '') {
+            $this->accept($this->input->post('id', TRUE));
+        } else {
+            if ($assignment->status_id == 4){
+                $data = array(
+                    'destiny_location_id'        => $location->id,
+                    'updated_at'                 => $current_date,
+                    'completed_at'               => $current_date,
+                );
+            } elseif ($assignment->status_id == 3){
+                $data = array(
+                    'origin_location_id'         => $location->id,
+                    'updated_at'                 => $current_date,
+                    'register_at'                => $current_date,
+                );
+            }
+            
+
+            $this->Assignments_model->update($this->input->post('id', TRUE), $data);
+            $this->session->set_flashdata('message', 'Update Record Success');
+            redirect(site_url('assignments/register/'.$this->input->post('id')));
+        }
+    } 
+
+    
 
     public function complete($id) 
     {
@@ -666,6 +758,8 @@ class Assignments extends CI_Controller
             $data = array(
                 'button'                        => 'Accept',
                 'action'                        => site_url('assignments/complete_action'),
+                'register_asset'                => site_url('assignments/register_asset/'.$row->id),
+                'register_location'             => site_url('assignments/register_location/'.$row->id),
                 'id'                            => $row->id,
                 'asset_id'                      => $row->asset_id,
                 'created_by_person'             => $created_by_person->user_name,
@@ -697,31 +791,83 @@ class Assignments extends CI_Controller
         }
     }
 
+    public function sendMail()
+    {
+        $config = Array(
+          'protocol' => 'smtp',
+          'smtp_host' => 'ssl://smtp.googlemail.com',
+          'smtp_port' => 465,
+          'smtp_user' => 'phsilveira.henrique@gmail.com', // change it to yours
+          'smtp_pass' => '&*phS77142102', // change it to yours
+          'mailtype' => 'html',
+          'charset' => 'iso-8859-1',
+          'wordwrap' => TRUE
+        );
+
+        $message = '';
+        $this->load->library('email', $config);
+        $this->email->set_newline("\r\n");
+        $this->email->from('phsilveira.henrique@gmail.com'); // change it to yours
+        $this->email->to('phsilveira.henrique@gmail.com');// change it to yours
+        $this->email->subject('Resume from JobsBuddy for your Job posting');
+        $this->email->message($message);
+        if($this->email->send()){
+            echo 'Email sent.';
+        } else {
+            show_error($this->email->print_debugger());
+        }
+
+    }
+
     public function complete_action() 
     {
         // $this->_rules();
-        $this->form_validation->set_rules('asset_id', 'asset id', 'trim|required');
-        $this->form_validation->set_rules('destiny_location_id', 'destiny_location_id', 'trim|required');
+        // $this->form_validation->set_rules('asset_id', 'asset id', 'trim|required');
+        // $this->form_validation->set_rules('destiny_location_id', 'destiny_location_id', 'trim|required');
         $this->form_validation->set_error_delimiters('<span class="text-danger">', '</span>');
 
         $current_date   = date("Y-m-d,H:i:s");
         $status_id      = 5;
 
-        if ($this->form_validation->run() == FALSE) {
-            $this->accept($this->input->post('id', TRUE));
-        } else {
-            $data = array(
-                'asset_id'                   => $this->input->post('asset_id'),
-                'destiny_location_id'        => $this->input->post('destiny_location_id'),
-                'status_id'                  => $status_id,
-                'updated_at'                 => $current_date,
-                'completed_at'               => $current_date,
-            );
+        
+        $data = array(
+            // 'asset_id'                   => $this->input->post('asset_id'),
+            // 'destiny_location_id'        => $this->input->post('destiny_location_id'),
+            'status_id'                  => $status_id,
+            'updated_at'                 => $current_date,
+            'completed_at'               => $current_date,
+        );
 
-            $this->Assignments_model->update($this->input->post('id', TRUE), $data);
-            $this->session->set_flashdata('message', 'Update Record Success');
-            redirect(site_url('assignments'));
+
+
+        $this->Assignments_model->update($this->input->post('id', TRUE), $data);
+        $this->session->set_flashdata('message', 'Update Record Success');
+
+        $config = Array(
+          'protocol' => 'smtp',
+          'smtp_host' => 'ssl://smtp.googlemail.com',
+          'smtp_port' => 465,
+          'smtp_user' => 'phsilveira.henrique@gmail.com', // change it to yours
+          'smtp_pass' => '&*phS77142102', // change it to yours
+          'mailtype' => 'html',
+          'charset' => 'iso-8859-1',
+          'wordwrap' => TRUE
+        );
+
+        $message = '';
+        $this->load->library('email', $config);
+        $this->email->set_newline("\r\n");
+        $this->email->from('phsilveira.henrique@gmail.com'); // change it to yours
+        $this->email->to('phsilveira.henrique@gmail.com');// change it to yours
+        $this->email->subject('Resume from JobsBuddy for your Job posting');
+        $this->email->message($message);
+        if($this->email->send()){
+            echo 'Email sent.';
+        } else {
+            show_error($this->email->print_debugger());
         }
+
+        redirect(site_url('assignments'));
     }
     
     public function delete($id) 
@@ -755,6 +901,8 @@ class Assignments extends CI_Controller
 		$this->form_validation->set_rules('id', 'id', 'trim');
 		$this->form_validation->set_error_delimiters('<span class="text-danger">', '</span>');
     }
+
+    
 
     public function send_push()
 	{

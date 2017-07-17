@@ -5,8 +5,8 @@
 
 
         <div class="form-group">
-            <label for="int">Ativo<?php echo form_error('asset_id') ?></label>
-            <input type="text" class="form-control" name="asset_id" id="asset_id" placeholder="Asset Id" value="<?php echo $this->uri->segment(4); ?>" />
+            <label for="int">Local de origem<?php echo form_error('origin_location_id') ?></label>
+            <input type="text" class="form-control" name="origin_location_id" id="origin_location_id" placeholder="Origin Location Id" value="<?php echo $this->uri->segment(4); ?>" />
         </div>
 
         <div class="form-group">
