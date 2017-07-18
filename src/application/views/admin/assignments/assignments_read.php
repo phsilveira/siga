@@ -1,5 +1,5 @@
 <div class='container'>
-<h2 style="margin-top:0px">Assignments Read</h2>
+<h2 style="margin-top:0px">Detalhes do Chamado</h2>
 <table class="table">
 <tr><td>Motivo</td><td><?php echo $reason; ?></td></tr>
 <tr><td>Item</td><td><?php echo $item; ?></td></tr>

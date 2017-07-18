@@ -4,7 +4,7 @@
         <div class="span12 columns">
 
 
-          <h2 style="margin-top:0px">Assets List</h2>
+          <h2 style="margin-top:0px">Ativos</h2>
           <div class="row" style="margin-bottom: 10px">
             <div class="col-md-4">
               <?php echo anchor(site_url('assets/create'),'Create', 'class="btn btn-primary"'); ?>
@@ -37,26 +37,24 @@
           </div>
           <table class="table table-bordered" style="margin-bottom: 10px">
             <tr>
-              <th>Criado</th>
               <th>#</th>
+              <th>Criado</th>
               <th>ID</th>
+              <th>Tag</th>
               <th>Item</th>
               <th>Centro de custo</th>
-              <th>Tag</th>
-              
-              
-              <th>Action</th>
+              <th>Ação</th>
             </tr><?php
             foreach ($assets_data as $assets)
             {
               ?>
               <tr>
-                <td><?php echo $assets->created_at ?></td>
                 <td width="80px"><?php echo ++$start ?></td>
+                <td><?php echo $assets->created_at ?></td>
                 <td><?php echo $assets->id ?></td>
+                <td><?php echo $assets->asset_tag ?></td>
                 <td><?php foreach($items as $item){if ($item->id == $assets->item_id){echo $item->name;}} ?></td>
                 <td><?php foreach($cost_centers as $cost_center){if ($cost_center->id == $assets->cost_center_id){echo $cost_center->name;}} ?></td>
-                <td><?php echo $assets->asset_tag ?></td>
                 <td style="text-align:center" width="200px">
                   <?php 
                   echo anchor(site_url('assets/read/'.$assets->id),'Read'); 

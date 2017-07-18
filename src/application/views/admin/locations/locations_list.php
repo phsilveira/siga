@@ -34,6 +34,7 @@
     <tr>
         <th>#</th>
         <th>ID</th>
+        <th>Tag</th>
         <th>Centro de custo</th>
         <th>Andar</th>
         <th>Bloco</th>
@@ -52,6 +53,7 @@
         <tr>
             <td width="80px"><?php echo ++$start ?></td>
             <td><?php echo $locations->id ?></td>
+            <td><?php echo $locations->tag ?></td>
             <td><?php echo $locations->cost_center_id ?></td>
             <td><?php echo $locations->floor ?></td>
             <td><?php echo $locations->block ?></td>

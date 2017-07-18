@@ -194,7 +194,7 @@ class Assignments extends CI_Controller
             }
 
         } else {
-            $this->session->set_flashdata('message', 'Record Not Found');
+            $this->session->set_flashdata('message', 'Chamado não encontrado');
             redirect(site_url('assignments'));
         }
     }
@@ -202,7 +202,7 @@ class Assignments extends CI_Controller
     public function create() 
     {
         $data = array(
-            'button'                        => 'Create',
+            'button'                        => 'Criar',
             'action'                        => site_url('assignments/create_action'),
 		    'id'                            => set_value('id'),
 		    'asset_id'                      => set_value('asset_id'),
@@ -260,7 +260,7 @@ class Assignments extends CI_Controller
 		    );
 
             $this->Assignments_model->insert($data);
-            $this->session->set_flashdata('message', 'Create Record Success');
+            $this->session->set_flashdata('message', 'Chamado criado com sucesso');
             redirect(site_url('assignments'));
         }
     }  
@@ -271,7 +271,7 @@ class Assignments extends CI_Controller
 
         if ($row) {
             $data = array(
-                'button' => 'Update',
+                'button' => 'Atualizar',
                 'action' => site_url('assignments/update_action'),
 				'id' => set_value('id', $row->id),
 				'asset_id' => set_value('asset_id', $row->asset_id),
@@ -303,7 +303,7 @@ class Assignments extends CI_Controller
             }
 
         } else {
-            $this->session->set_flashdata('message', 'Record Not Found');
+            $this->session->set_flashdata('message', 'Chamado não encontrado');
             redirect(site_url('assignments'));
         }
     }
@@ -333,7 +333,7 @@ class Assignments extends CI_Controller
 		    );
 
             $this->Assignments_model->update($this->input->post('id', TRUE), $data);
-            $this->session->set_flashdata('message', 'Update Record Success');
+            $this->session->set_flashdata('message', 'Chamado Atualizado');
             redirect(site_url('assignments'));
         }
     }
@@ -345,7 +345,7 @@ class Assignments extends CI_Controller
         $reasons                      = $this->Utils_model->get_all_reasons();
 
         $data = array(
-            'button' 					=> 'Add',
+            'button' 					=> 'Adicionar',
             'action' 					=> site_url('assignments/add_action'),
 		    'id' 						=> set_value('id'),
 		    'cost_center_id' 			=> set_value('cost_center_id'),
@@ -406,7 +406,7 @@ class Assignments extends CI_Controller
 		    );
 
             $this->Assignments_model->insert($data);
-            $this->session->set_flashdata('message', 'Create Record Success');
+            $this->session->set_flashdata('message', 'Chamado criado com sucesso');
             redirect(site_url('assignments'));
         }
     }
@@ -430,12 +430,12 @@ class Assignments extends CI_Controller
         
         if ($row) {
             $data = array(
-                'button'                        => 'Accept',
+                'button'                        => 'Aceitar',
                 'action'                        => site_url('assignments/accept_action'),
                 'id'                            => $row->id,
                 'asset_id'                      => $row->asset_id,
                 'created_by_person'             => $created_by_person->user_name,
-                'cost_center'                   => $cost_center,
+                'cost_center'                   => $row->cost_center_id,
                 'status'                        => $status->name,
                 'created_at'                    => $row->created_at,
                 'origin_location_id'            => $row->origin_location_id,
@@ -458,7 +458,7 @@ class Assignments extends CI_Controller
             }
 
         } else {
-            $this->session->set_flashdata('message', 'Record Not Found');
+            $this->session->set_flashdata('message', 'Chamado não encontrado');
             redirect(site_url('assignments'));
         }
 
@@ -496,7 +496,7 @@ class Assignments extends CI_Controller
     //         }
 
     //     } else {
-    //         $this->session->set_flashdata('message', 'Record Not Found');
+    //         $this->session->set_flashdata('message', 'Chamado não encontrado');
     //         redirect(site_url('assignments'));
     //     }
     }
@@ -519,7 +519,7 @@ class Assignments extends CI_Controller
 	    );
 
         $this->Assignments_model->update($this->input->post('id', TRUE), $data);
-        $this->session->set_flashdata('message', 'Update Record Success');
+        $this->session->set_flashdata('message', 'Chamado aceito com sucesso');
         redirect(site_url('assignments'));
     
     }
@@ -543,14 +543,14 @@ class Assignments extends CI_Controller
         
         if ($row) {
             $data = array(
-                'button'                        => 'Accept',
+                'button'                        => 'Registrar',
                 'action'                        => site_url('assignments/register_action'),
                 'register_asset'                => site_url('assignments/register_asset/'.$row->id),
                 'register_location'             => site_url('assignments/register_location/'.$row->id),
                 'id'                            => $row->id,
                 'asset_id'                      => $row->asset_id,
                 'created_by_person'             => $created_by_person->user_name,
-                'cost_center'                   => $cost_center,
+                'cost_center'                   => $row->cost_center_id,
                 'status'                        => $status->name,
                 'created_at'                    => $row->created_at,
                 'origin_location_id'            => $row->origin_location_id,
@@ -573,7 +573,7 @@ class Assignments extends CI_Controller
             }
 
         } else {
-            $this->session->set_flashdata('message', 'Record Not Found');
+            $this->session->set_flashdata('message', 'Chamado não encontrado');
             redirect(site_url('assignments'));
         }
     }
@@ -600,7 +600,7 @@ class Assignments extends CI_Controller
         );
 
         $this->Assignments_model->update($this->input->post('id', TRUE), $data);
-        $this->session->set_flashdata('message', 'Update Record Success');
+        $this->session->set_flashdata('message', 'Chamado registrado com sucesso');
         redirect(site_url('assignments'));
         // }
     }
@@ -632,7 +632,7 @@ class Assignments extends CI_Controller
             }
 
         } else {
-            $this->session->set_flashdata('message', 'Record Not Found');
+            $this->session->set_flashdata('message', 'Chamado não encontrado');
             redirect(site_url('assignments/register/'.$id));
         }
 
@@ -650,20 +650,34 @@ class Assignments extends CI_Controller
         $this->load->model('Assets_model');
         $asset            = $this->Assets_model->get_by_tag($this->input->post('asset_id'));
 
-        // echo $asset->id;
+        $assignment     = $this->Assignments_model->get_by_id($this->input->post('id'));
 
         if ($this->form_validation->run() == FALSE || $asset->id == '') {
             $this->accept($this->input->post('id', TRUE));
         } else {
-            $data = array(
-                'asset_id'                   => $asset->id,
-                'updated_at'                 => $current_date,
-                'register_at'                => $current_date,
-            );
 
-            $this->Assignments_model->update($this->input->post('id', TRUE), $data);
-            $this->session->set_flashdata('message', 'Update Record Success');
-            redirect(site_url('assignments/register/'.$this->input->post('id')));
+            if ($assignment->status_id == 4){
+                $data = array(
+                    'registered_asset_id'          => $asset->id,
+                    'updated_at'                 => $current_date,
+                    'completed_at'               => $current_date,
+                    'register_at'                => $current_date,
+                );
+                $this->Assignments_model->update($this->input->post('id', TRUE), $data);
+                $this->session->set_flashdata('message', 'Ativo registrado com sucesso');
+                redirect(site_url('assignments/complete/'.$this->input->post('id')));
+            } elseif ($assignment->status_id == 3){
+                $data = array(
+                    'asset_id'                   => $asset->id,
+                    'updated_at'                 => $current_date,
+                    'register_at'                => $current_date,
+                );
+                $this->Assignments_model->update($this->input->post('id', TRUE), $data);
+                $this->session->set_flashdata('message', 'Ativo registrado com sucesso');
+                redirect(site_url('assignments/register/'.$this->input->post('id')));
+            }
+
+            
         }
     }
 
@@ -690,7 +704,7 @@ class Assignments extends CI_Controller
             }
 
         } else {
-            $this->session->set_flashdata('message', 'Record Not Found');
+            $this->session->set_flashdata('message', 'Chamado não encontrado');
             redirect(site_url('assignments/register/'.$id));
         }
         
@@ -720,17 +734,23 @@ class Assignments extends CI_Controller
                     'updated_at'                 => $current_date,
                     'completed_at'               => $current_date,
                 );
+                $this->Assignments_model->update($this->input->post('id', TRUE), $data);
+                $this->session->set_flashdata('message', 'Ativo registrado com sucesso');
+                redirect(site_url('assignments/complete/'.$this->input->post('id')));
             } elseif ($assignment->status_id == 3){
                 $data = array(
                     'origin_location_id'         => $location->id,
                     'updated_at'                 => $current_date,
                     'register_at'                => $current_date,
                 );
+                $this->Assignments_model->update($this->input->post('id', TRUE), $data);
+                $this->session->set_flashdata('message', 'Ativo registrado com sucesso');
+                redirect(site_url('assignments/register/'.$this->input->post('id')));
             }
             
 
             $this->Assignments_model->update($this->input->post('id', TRUE), $data);
-            $this->session->set_flashdata('message', 'Update Record Success');
+            $this->session->set_flashdata('message', 'Local registrado com sucesso');
             redirect(site_url('assignments/register/'.$this->input->post('id')));
         }
     } 
@@ -756,14 +776,14 @@ class Assignments extends CI_Controller
         
         if ($row) {
             $data = array(
-                'button'                        => 'Accept',
+                'button'                        => 'Finalizar',
                 'action'                        => site_url('assignments/complete_action'),
                 'register_asset'                => site_url('assignments/register_asset/'.$row->id),
                 'register_location'             => site_url('assignments/register_location/'.$row->id),
                 'id'                            => $row->id,
                 'asset_id'                      => $row->asset_id,
                 'created_by_person'             => $created_by_person->user_name,
-                'cost_center'                   => $cost_center,
+                'cost_center'                   => $row->cost_center_id,
                 'status'                        => $status->name,
                 'created_at'                    => $row->created_at,
                 'origin_location_id'            => $row->origin_location_id,
@@ -786,7 +806,7 @@ class Assignments extends CI_Controller
             }
 
         } else {
-            $this->session->set_flashdata('message', 'Record Not Found');
+            $this->session->set_flashdata('message', 'Chamado não encontrado');
             redirect(site_url('assignments'));
         }
     }
@@ -841,7 +861,7 @@ class Assignments extends CI_Controller
 
 
         $this->Assignments_model->update($this->input->post('id', TRUE), $data);
-        $this->session->set_flashdata('message', 'Update Record Success');
+        $this->session->set_flashdata('message', 'Chamado Finalizado com sucesso');
 
         $config = Array(
           'protocol' => 'smtp',
@@ -879,7 +899,7 @@ class Assignments extends CI_Controller
             $this->session->set_flashdata('message', 'Delete Record Success');
             redirect(site_url('assignments'));
         } else {
-            $this->session->set_flashdata('message', 'Record Not Found');
+            $this->session->set_flashdata('message', 'Chamado não encontrado');
             redirect(site_url('assignments'));
         }
     }

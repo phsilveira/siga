@@ -1,5 +1,5 @@
 <div class="container">
-  <h2 style="margin-top:0px">Assignments List</h2>
+  <h2 style="margin-top:0px">Chamados</h2>
   <div class="row" style="margin-bottom: 10px">
     <div class="col-md-4">
       <?php echo anchor(site_url('assignments/add'),'Abrir novo Chamado', 'class="btn btn-primary"'); ?>
@@ -24,7 +24,7 @@
               <?php
             }
             ?>
-            <button class="btn btn-primary" type="submit">Search</button>
+            <button class="btn btn-primary" type="submit">Pesquisar</button>
           </span>
         </div>
       </form>
@@ -32,7 +32,7 @@
   </div>
   <table class="table table-bordered" style="margin-bottom: 10px">
     <tr>
-      <th>Linha</th>
+      <th>#</th>
       <th>Criado em</th>
       <th>ID</th>
       <th>Ativo</th>

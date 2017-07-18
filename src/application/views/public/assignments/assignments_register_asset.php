@@ -1,6 +1,6 @@
 <div class='container'>
 
-    <h2 style="margin-top:0px">Assignments <?php echo $button ?></h2>
+    <h2 style="margin-top:0px">Registrar Ativo</h2>
     <form action="<?php echo $action; ?>" method="post">
 
 
@@ -10,8 +10,8 @@
         </div>
 
         <div class="form-group">
-            <label for="int">ID<?php echo form_error('id') ?></label>
-            <input type="text" class="form-control" name="id" id="id" placeholder="Id" value="<?php echo $id; ?>" />
+            <label for="int">id<?php echo form_error('id') ?></label>
+            <input type="text" class="form-control" name="id" id="id" placeholder="Id" readonly="readonly" value="<?php echo $id; ?>" />
         </div>
 
 

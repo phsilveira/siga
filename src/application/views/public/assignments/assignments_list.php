@@ -24,7 +24,7 @@
               <?php
             }
             ?>
-            <button class="btn btn-primary" type="submit">Search</button>
+            <button class="btn btn-primary" type="submit">Pesquisar</button>
           </span>
         </div>
       </form>
@@ -32,9 +32,9 @@
   </div>
   <table class="table table-bordered" style="margin-bottom: 10px">
     <tr>
-      <th>Action</th>
+      <th>#</th>
+      <th>Ação</th>
       <th>Criado em</th>
-      <th>row</th>
       <th>ID</th>
       <th>Ativo</th>
       <th>Solicitante</th>
@@ -49,6 +49,7 @@
     {
       ?>
       <tr>
+        <td width="80px"><?php echo ++$start ?></td>
         <?php 
         foreach($users as $user){if ($user->id == $assignments->assignmented_for_person_id){$assignmented_for_person = $user->user_name;}}
         echo '<td class="crud-actions">';
@@ -63,7 +64,6 @@
         }
         echo '</td>';?>
         <td><?php echo $assignments->created_at ?></td>
-        <td width="80px"><?php echo ++$start ?></td>
         <td><a href="<?php echo site_url('assignments/read/'.$assignments->id); ?>"><?php echo $assignments->id ?></a></td>
         <td><?php echo $assignments->asset_id ?></td>
         <td><?php foreach($users as $user){if ($user->id == $assignments->created_by_person_id){echo $user->user_name;}} ?></td>
@@ -80,7 +80,7 @@
   </table>
   <div class="row">
     <div class="col-md-6">
-      <a href="#" class="btn btn-primary">Total Record : <?php echo $total_rows ?></a>
+      <a href="#" class="btn btn-primary">Total: <?php echo $total_rows ?></a>
       <?php echo anchor(site_url('assignments/excel'), 'Excel', 'class="btn btn-primary"'); ?>
     </div>
     <div class="col-md-6 text-right">
