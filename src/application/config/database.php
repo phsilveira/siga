@@ -75,10 +75,10 @@ $query_builder = TRUE;
 
 $db['default'] = array(
 	'dsn'	=> '',
-	'hostname' => '54.183.204.211',
-	'username' => 'homestead',
+	'hostname' => 'siga-database',
+	'username' => 'root',
 	'password' => 'secret',
-	'database' => 'homestead',
+	'database' => 'siga',
 	'dbdriver' => 'mysqli',
 	'dbprefix' => '',
 	'pconnect' => FALSE,

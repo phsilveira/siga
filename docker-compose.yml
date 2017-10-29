@@ -20,10 +20,7 @@ services:
       MYSQL_DATABASE: ${MYSQL_DATABASE}
       MYSQL_USER: ${MYSQL_USER}
       MYSQL_PASSWORD: ${MYSQL_PASSWORD}
-    #volumes:
-    # - ./data:/var/lib/mysql
+    volumes:
+     - ./data:/var/lib/mysql
     ports:
      - ${MYSQL_PORT}:3306
-#volumes:
-#  data:
-#    driver: local
