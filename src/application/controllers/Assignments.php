@@ -865,10 +865,10 @@ class Assignments extends CI_Controller
 
         $config = Array(
           'protocol' => 'smtp',
-          'smtp_host' => 'ssl://smtp.googlemail.com',
-          'smtp_port' => 465,
-          'smtp_user' => 'phsilveira.henrique@gmail.com', // change it to yours
-          'smtp_pass' => '&*phS77142102', // change it to yours
+          'smtp_host' => '',
+          'smtp_port' => ,
+          'smtp_user' => '', // change it to yours
+          'smtp_pass' => '', // change it to yours
           'mailtype' => 'html',
           'charset' => 'iso-8859-1',
           'wordwrap' => TRUE
@@ -877,9 +877,9 @@ class Assignments extends CI_Controller
         $message = '';
         $this->load->library('email', $config);
         $this->email->set_newline("\r\n");
-        $this->email->from('phsilveira.henrique@gmail.com'); // change it to yours
-        $this->email->to('phsilveira.henrique@gmail.com');// change it to yours
-        $this->email->subject('Resume from JobsBuddy for your Job posting');
+        $this->email->from(''); // change it to yours
+        $this->email->to('');// change it to yours
+        $this->email->subject('');
         $this->email->message($message);
         if($this->email->send()){
             echo 'Email sent.';
